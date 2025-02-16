@@ -37,10 +37,16 @@ Usage
 
 Project Structure
 ```
-???? Imbalanced-Data-Handling
-├── ???? imbalance.py  # Master script for working with imbalanced data
-├── ???? imbalance_data_1.1.py  # Helper processing script
-├── ???? README.md  # Project doc
+Imbalanced-Data-Handling
+
+├── imbalance.py  # Master script for working with imbalanced data
+
+├── imbalance_data_1.1.py
+
+# Helper processing script
+├── README.md
+
+# Project doc
 ```
 
 Results
