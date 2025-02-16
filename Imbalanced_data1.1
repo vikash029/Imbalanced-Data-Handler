@@ -1,0 +1,71 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
+from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import RandomUnderSampler
+from imblearn.combine import SMOTETomek
+
+# 📌 Step 1: Load & Explore Data (Example Dataset)
+from sklearn.datasets import make_classification
+X, y = make_classification(n_samples=5000, n_features=10, weights=[0.95, 0.05], random_state=42)
+
+# Convert to DataFrame for easier visualization
+df = pd.DataFrame(X, columns=[f'Feature_{i}' for i in range(10)])
+df['Target'] = y
+
+# Plot Class Distribution
+sns.countplot(x=df['Target'])
+plt.title("Original Class Distribution")
+plt.show()
+
+# 📌 Step 2: Split Data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
+
+# 📌 Step 3: Handle Imbalance Using Different Techniques
+
+## 1️⃣ SMOTE (Oversampling)
+smote = SMOTE(sampling_strategy=0.5, random_state=42)
+X_train_smote, y_train_smote = smote.fit_resample(X_train, y_train)
+
+## 2️⃣ Random Undersampling
+under = RandomUnderSampler(sampling_strategy=0.5, random_state=42)
+X_train_under, y_train_under = under.fit_resample(X_train, y_train)
+
+## 3️⃣ Hybrid (SMOTE + Tomek Links)
+smote_tomek = SMOTETomek(random_state=42)
+X_train_hybrid, y_train_hybrid = smote_tomek.fit_resample(X_train, y_train)
+
+# 📌 Step 4: Train Model & Evaluate Performance
+def train_and_evaluate(X_train, y_train, X_test, y_test, title):
+    model = RandomForestClassifier(random_state=42)
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    
+    print(f"\n🔹 {title}")
+    print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
+    print("Classification Report:\n", classification_report(y_test, y_pred))
+    print("ROC-AUC Score:", roc_auc_score(y_test, y_pred))
+
+# Evaluate with Different Resampling Strategies
+train_and_evaluate(X_train, y_train, X_test, y_test, "Original Data")
+train_and_evaluate(X_train_smote, y_train_smote, X_test, y_test, "SMOTE Oversampling")
+train_and_evaluate(X_train_under, y_train_under, X_test, y_test, "Random Undersampling")
+train_and_evaluate(X_train_hybrid, y_train_hybrid, X_test, y_test, "Hybrid (SMOTE + Tomek)")
+
+# 📌 Step 5: Visualize New Class Distributions
+fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+sns.countplot(x=y_train_smote, ax=axes[0])
+axes[0].set_title("SMOTE Oversampling")
+
+sns.countplot(x=y_train_under, ax=axes[1])
+axes[1].set_title("Random Undersampling")
+
+sns.countplot(x=y_train_hybrid, ax=axes[2])
+axes[2].set_title("Hybrid (SMOTE + Tomek)")
+
+plt.show()
