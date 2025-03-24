@@ -1,4 +1,4 @@
-huHandling Imbalanced Data in Machine Learning
+Imbalanced Data in Machine Learning
 
 Overview
 Class imbalance is prevalent in real-world problems such as fraud detection, medical diagnosis, and anomaly detection. This project presents several methods to handle class imbalance and enhance model performance.
